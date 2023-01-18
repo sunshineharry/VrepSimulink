@@ -49,7 +49,7 @@ Firstly, add the `Sync Triger` in the beginning of the model
 
 Then, add the `SetJointVelocity` model, you should enter joint name and confirm whether to use radian system.
 
-![image-20230118174843123](assets/image-20230118174843123.png)
+![image-20230118174843123](docs/images/image-20230118174843123.png)
 
 ​	In the same way, configure other modules.
 
