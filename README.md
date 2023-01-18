@@ -63,3 +63,7 @@ Todo
 
 ## 4. The other blocks in coming soon !!!
 
+## 5. Use in MacOS or Linux
+
+copy the `remoteApi.so` ro `remoteApi.dylib` in it.
+
