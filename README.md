@@ -57,7 +57,11 @@ Then, add the `SetJointVelocity` model, you should enter joint name and confirm 
 
 ![image-20230118175144887](docs/images/image-20230118175144887.png)
 
-## 3. Implementation
+**Note:**
+
+For more detailed information, please refer to /docs/slide.ppt. and you can watch the video in https://www.bilibili.com/video/BV1M84y187R1. I will update a English version video in Youtube soon.
+
+## Implementation
 
 Todo
 
