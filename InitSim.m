@@ -19,3 +19,7 @@ end
 
 %% 以同步模式运行
 vrep.simxSynchronous(clientID, true);
+
+%% 由于在第一个仿真步长无法获取正确的信息，所以先运行一次，顺带在Vrep中提示连接成功
+vrep.simxSynchronousTrigger(clientID);
+vrep.simxAddStatusbarMessage(clientID, 'Connection to VrepLib Success!', vrep.simx_opmode_oneshot); 

@@ -35,12 +35,8 @@ end
 
 function sys = mdlOutputs(t,x,u,vrep,clientID,joint_name,is_use_radian)
     % 获取句柄，你要对什么对象进行操作，需要先获取句柄
-    [res, joint_handle] = vrep.simxGetObjectHandle(clientID, joint_name, vrep.simx_opmode_blocking);
-    [returnCode, position] = vrep.simxGetJointPosition(clientID, joint_handle, vrep.simx_opmode_blocking);
-    if t==0
-        sys(1) = 0;
-        return;
-    end
+    [~, joint_handle] = vrep.simxGetObjectHandle(clientID, joint_name, vrep.simx_opmode_blocking);
+    [~, position] = vrep.simxGetJointPosition(clientID, joint_handle, vrep.simx_opmode_blocking);
     if is_use_radian
         sys(1) = double(position);
     else
