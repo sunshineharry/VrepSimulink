@@ -1,4 +1,4 @@
-function [sys,x0,str,ts] = GetObjectPosition(t,x,u,flag,vrep,clientID,object_name,relative_object_name)
+function [sys,x0,str,ts] = GetObjectPose(t,x,u,flag,vrep,clientID,object_name,relative_object_name)
     switch flag
         case 0
             [sys,x0,str,ts]=mdlInitializeSizes;
@@ -19,7 +19,7 @@ function [sys,x0,str,ts] = mdlInitializeSizes
     sizes = simsizes;           
     sizes.NumContStates  = 0;   
     sizes.NumDiscStates  = 0; 
-    sizes.NumOutputs     = 3;
+    sizes.NumOutputs     = 6;
     sizes.NumInputs      = 0;
     sizes.DirFeedthrough = 1;
     sizes.NumSampleTimes = 1;
@@ -33,7 +33,7 @@ function sys = mdlUpdate(~,~,~)
     sys = [];
 end
 
-function sys = mdlOutputs(~,~,~,vrep,clientID,object_name,relative_object_name)
+function sys = mdlOutputs(t,x,u,vrep,clientID,object_name,relative_object_name)
     % 获取物体的句柄
     [~, object_handle] = vrep.simxGetObjectHandle(clientID, object_name, vrep.simx_opmode_blocking);
     
@@ -48,7 +48,14 @@ function sys = mdlOutputs(~,~,~,vrep,clientID,object_name,relative_object_name)
     
     % 获取相对位置
     [~, position] = vrep.simxGetObjectPosition(clientID, object_handle, relative_handle, vrep.simx_opmode_blocking);
+    [~,xyz] = vrep.simxGetObjectOrientation(clientID, object_handle, relative_handle, vrep.simx_opmode_blocking);
+    % [~,quat] = vrep.simxGetObjectQuaternion(clientID, object_handle, relative_handle, vrep.simx_opmode_blocking);
+    
+    % zyz_eul转欧拉角
+    xyz = double(xyz);
+    r = SO3.Rx(xyz(1)) * SO3.Ry(xyz(2)) * SO3.Rz(xyz(3));
+    eul = r.toeul();
     
     % 输出
-    sys = double(position);
+    sys = [double(position),eul];
 end

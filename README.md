@@ -1,5 +1,9 @@
 # A simple library to link Simulink and Vrep/CoppeliaSim
 
+## Dependence
+
+- Robotics Toolbox (V10, latest): https://petercorke.com/toolboxes/robotics-toolbox/
+
 ## 1.  Operations in Vrep
 
 I have a simple mechanism with two links shown in figure below. 
