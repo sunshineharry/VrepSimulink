@@ -1,4 +1,5 @@
-function [sys,x0,str,ts] = GetObjectPose(t,x,u,flag,vrep,clientID,object_name,relative_object_name)
+% 【注】：函数是将新的坐标系【设置到】某个位置，而不是在之前的基础上进行移动
+function [sys,x0,str,ts] = SetObjectRotationByRPY(t,x,u,flag,vrep,clientID,object_name,relative_object_name)
     switch flag
         case 0
             [sys,x0,str,ts]=mdlInitializeSizes;
@@ -19,8 +20,8 @@ function [sys,x0,str,ts] = mdlInitializeSizes
     sizes = simsizes;           
     sizes.NumContStates  = 0;   
     sizes.NumDiscStates  = 0; 
-    sizes.NumOutputs     = 6;
-    sizes.NumInputs      = 0;
+    sizes.NumOutputs     = 0;
+    sizes.NumInputs      = 3;
     sizes.DirFeedthrough = 1;
     sizes.NumSampleTimes = 1;
     sys = simsizes(sizes); 
@@ -33,7 +34,7 @@ function sys = mdlUpdate(~,~,~)
     sys = [];
 end
 
-function sys = mdlOutputs(t,x,u,vrep,clientID,object_name,relative_object_name)
+function sys = mdlOutputs(~,~,u,vrep,clientID,object_name,relative_object_name)
     % 获取物体的句柄
     [~, object_handle] = vrep.simxGetObjectHandle(clientID, object_name, vrep.simx_opmode_blocking);
     
@@ -46,16 +47,13 @@ function sys = mdlOutputs(t,x,u,vrep,clientID,object_name,relative_object_name)
         [~, relative_handle] = vrep.simxGetObjectHandle(clientID, relative_object_name, vrep.simx_opmode_blocking);
     end
     
-    % 获取相对位置
-    [~, position] = vrep.simxGetObjectPosition(clientID, object_handle, relative_handle, vrep.simx_opmode_blocking);
+    % 通过相对量计算绝对量
     [~,xyz] = vrep.simxGetObjectOrientation(clientID, object_handle, relative_handle, vrep.simx_opmode_blocking);
-    % [~,quat] = vrep.simxGetObjectQuaternion(clientID, object_handle, relative_handle, vrep.simx_opmode_blocking);
+    R = rpy2r(u')*rotx(xyz(1))*roty(xyz(2))*rotz(xyz(3));
+    finla_rpy = tr2rpy(R);
     
-    % xyz转欧拉角
-    xyz = double(xyz);
-    r = SO3.Rx(xyz(1)) * SO3.Ry(xyz(2)) * SO3.Rz(xyz(3));
-    eul = r.toeul();
-    
-    % 输出
-    sys = [double(position),eul];
+    % 控制
+    vrep.simxSetObjectOrientation(clientID, object_handle, relative_handle, [finla_rpy(3),finla_rpy(2),finla_rpy(1)], vrep.simx_opmode_oneshot);
+
+    sys = [];
 end
